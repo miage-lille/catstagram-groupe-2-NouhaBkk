@@ -4,18 +4,31 @@ import { FetchCatsRequest } from './types/actions.type';
 
 export const cmdFetch = (action: FetchCatsRequest) =>
   Cmd.run(
-    () => {
-      return fetch(action.path, {
+    async () => {
+      const perPage = Math.max(3, parseInt(action.path.split('per_page=')[1] || '0', 10));
+      const url = `${action.path.split('per_page=')[0]}per_page=${perPage}`;
+      
+      const response = await fetch(url, {
         method: action.method,
-      }).then(checkStatus);
+      });
+
+      if (!response.ok) {
+        throw new Error(response.statusText); 
+      }
+
+      const data = await response.json(); 
+      console.log("API Response:", data);
+
+      
+      return data.hits.map((hit: any) => ({
+        previewFormat: hit.previewURL,
+        webFormat: hit.webformatURL,
+        largeFormat: hit.largeImageURL,
+        author: hit.user,
+      }));
     },
     {
-      successActionCreator: fetchCatsCommit, // (equals to (payload) => fetchCatsCommit(payload))
-      failActionCreator: fetchCatsRollback, // (equals to (error) => fetchCatsCommit(error))
-    },
+      successActionCreator: fetchCatsCommit, 
+      failActionCreator: fetchCatsRollback, 
+    }
   );
-
-const checkStatus = (response: Response) => {
-  if (response.ok) return response;
-  throw new Error(response.statusText);
-};

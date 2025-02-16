@@ -1,8 +1,9 @@
-import { Loop, liftState } from 'redux-loop';
+import { Loop, liftState, Cmd, loop } from 'redux-loop';
 import { compose } from 'redux';
 import { Actions } from './types/actions.type';
 import { Picture } from './types/picture.type'; 
 import fakeData from './fake-datas.json';
+import { cmdFetch } from './commands';
 
 export type State = {
   counter: number;
@@ -41,24 +42,31 @@ export const reducer = (state: State | undefined, action: Actions): State | Loop
         selectedPicture: null, 
       };
     case 'FETCH_CATS_REQUEST':
-      return state;
-      case 'FETCH_CATS_COMMIT':
-        const validatedPictures = Array.isArray(action.payload)
-        ? action.payload.filter(
-            (item) =>
-              item &&
-              typeof item.previewFormat === 'string' &&
-              typeof item.webFormat === 'string' &&
-              typeof item.largeFormat === 'string' &&
-              typeof item.author === 'string',
-          )
-        : [];
+      return loop(
+        state,
+        cmdFetch(action) 
+      );
+    case 'FETCH_CATS_COMMIT':
+      const validatedPictures = Array.isArray(action.payload)
+      ? action.payload.filter(
+          (item) =>
+            item &&
+            typeof item.previewFormat === 'string' &&
+            typeof item.webFormat === 'string' &&
+            typeof item.largeFormat === 'string' &&
+            typeof item.author === 'string',
+        )
+      : [];
       return {
         ...state,
         pictures: validatedPictures,
       };
     case 'FETCH_CATS_ROLLBACK':
-      return state;
+      console.error('Erreur lors de l\'appel API:', action.error); // Loguez l'erreur
+      return {
+        ...state,
+        pictures: [], 
+      };
     default:
       return state;
   }

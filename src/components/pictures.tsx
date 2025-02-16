@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import ModalPortal from './modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { counterSelector, getSelectedPicture, picturesSelector } from '../reducer';
-import { closeModal, selectPicture } from '../actions';
+import { closeModal, fetchCatsRequest, selectPicture } from '../actions';
 
 
 const Container = styled.div`
@@ -28,6 +28,9 @@ const Pictures = () => {
   const counter = useSelector(counterSelector);
   const selectedPicture = useSelector(getSelectedPicture);
   const visiblePictures = pictures.slice(0, counter);
+  useEffect(() => {
+    dispatch(fetchCatsRequest(counter)); 
+  }, [counter, dispatch]);
   return (
     <>
       <Container>
@@ -40,19 +43,14 @@ const Pictures = () => {
           />
         ))}
       </Container>
-      
       {selectedPicture && (
-        <>
-          <ModalPortal
-            largeFormat={selectedPicture.largeFormat}
-            author={selectedPicture.author}
-            close={() => dispatch(closeModal())}
-          />
-          {console.log('Données transmises à ModalPortal :', {
-            largeFormat: selectedPicture.largeFormat,
-            author: selectedPicture.author,
-          })}
-        </>
+        <ModalPortal
+          largeFormat={selectedPicture.largeFormat}
+          author={selectedPicture.author} 
+          close={() => dispatch(closeModal())} 
+          
+        />
+      
       )}
     </>
   );
