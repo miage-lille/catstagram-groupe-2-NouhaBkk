@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { decrement, increment } from '../actions';
-import { counterSelector } from '../selectors/counterSelector';
+import { counterSelector } from '../reducer';
 const Container = styled.div`
   padding: 16px;
   justify-content: center;

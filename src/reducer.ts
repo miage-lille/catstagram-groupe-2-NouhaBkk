@@ -2,6 +2,7 @@ import { Loop, liftState } from 'redux-loop';
 import { compose } from 'redux';
 import { Actions } from './types/actions.type';
 import { Picture } from './types/picture.type'; 
+import fakeData from './fake-datas.json';
 
 export type State = {
   counter: number;
@@ -12,7 +13,7 @@ export type State = {
 
 export const defaultState = {
   counter: 0, 
-  pictures: [], 
+  pictures: fakeData, 
   selectedPicture: null, 
 }; 
 
@@ -27,7 +28,7 @@ export const reducer = (state: State | undefined, action: Actions): State | Loop
     case 'DECREMENT':
       return {
         ...state,
-        counter: state.counter > 0 ? state.counter - 1 : 0, 
+        counter: Math.max(3, state.counter - 1),
       };
     case 'SELECT_PICTURE':
       return {
