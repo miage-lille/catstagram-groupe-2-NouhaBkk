@@ -1,4 +1,4 @@
-import { Decrement, FetchCatsCommit, FetchCatsRequest, FetchCatsRollback, Increment } from './types/actions.type';
+import { CloseModal, Decrement, FetchCatsCommit, FetchCatsRequest, FetchCatsRollback, Increment, SelectPicture } from './types/actions.type';
 import { Picture } from './types/picture.type';
 
 export const increment = (): Increment => ({ type: 'INCREMENT' });
@@ -10,7 +10,17 @@ export const fetchCatsRequest = (): FetchCatsRequest => ({
   path: 'Update the path',
 }); // TODO : Update this value !
 
-export const fetchCatsCommit = (payload: unknown): FetchCatsCommit => ({ type: 'FETCH_CATS_COMMIT', payload });
+export const fetchCatsCommit = (payload: unknown): FetchCatsCommit => {if (!Array.isArray(payload)) {
+  throw new Error('Payload must be an array of pictures');
+}
+
+// Validation des objets dans le tableau 
+if (!payload.every((item) => 'previewFormat' in item && 'webFormat' in item && 'largeFormat' in item && 'author' in item)) {
+  throw new Error('Invalid picture objects in payload');
+}
+
+return { type: 'FETCH_CATS_COMMIT', payload: payload as Picture[] };
+}
 
 export const fetchCatsRollback = (error: Error): FetchCatsRollback => ({ type: 'FETCH_CATS_ROLLBACK', error });
 

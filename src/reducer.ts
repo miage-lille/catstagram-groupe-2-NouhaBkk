@@ -33,7 +33,7 @@ export const reducer = (state: State | undefined, action: Actions): State | Loop
     case 'SELECT_PICTURE':
       return {
         ...state,
-        selectedPicture: action.payload, 
+        selectedPicture: action.payload? action.payload : null,
       };
     case 'CLOSE_MODAL':
       return {
@@ -43,10 +43,20 @@ export const reducer = (state: State | undefined, action: Actions): State | Loop
     case 'FETCH_CATS_REQUEST':
       return state;
       case 'FETCH_CATS_COMMIT':
-        return {
-          ...state,
-          pictures: Array.isArray(action.payload) ? action.payload : [], // Vérifie que le payload est bien un tableau
-        };
+        const validatedPictures = Array.isArray(action.payload)
+        ? action.payload.filter(
+            (item) =>
+              item &&
+              typeof item.previewFormat === 'string' &&
+              typeof item.webFormat === 'string' &&
+              typeof item.largeFormat === 'string' &&
+              typeof item.author === 'string',
+          )
+        : [];
+      return {
+        ...state,
+        pictures: validatedPictures,
+      };
     case 'FETCH_CATS_ROLLBACK':
       return state;
     default:

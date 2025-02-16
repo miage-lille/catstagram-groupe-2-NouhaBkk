@@ -40,11 +40,19 @@ const Pictures = () => {
           />
         ))}
       </Container>
+      
       {selectedPicture && (
-        <ModalPortal
-          largeFormat={selectedPicture.largeFormat}
-          close={() => dispatch(closeModal())} 
-        />
+        <>
+          <ModalPortal
+            largeFormat={selectedPicture.largeFormat}
+            author={selectedPicture.author}
+            close={() => dispatch(closeModal())}
+          />
+          {console.log('Données transmises à ModalPortal :', {
+            largeFormat: selectedPicture.largeFormat,
+            author: selectedPicture.author,
+          })}
+        </>
       )}
     </>
   );
